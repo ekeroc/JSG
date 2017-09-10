@@ -79,23 +79,28 @@ passport.use('local', new localStrategy({
     user = Users[username];
 
     if (user ==  null) {
+      console.log('error');                
       return done(null, false, { message: 'Invalid user' });
     };
 
     if (user.password !== password){
+      console.log('error');          
       return done(null, false, { message: 'Invalid user' });
     }
-    
+
+    console.log(user['name'] + ' Login Successfully.');              
     return done(null, user);
   }
 ));
 
 passport.serializeUser(function(user, done){
-  return done(null, user.name);
+  console.log(user['name']);
+  return done(null,user['name']);
 });
 
 passport.deserializeUser(function(user, done){
-  return done(null, Users[user.name]);
+  console.log(user);
+  return done(null, user);
 });
 
 module.exports = app;
