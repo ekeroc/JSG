@@ -3,22 +3,32 @@ var router = express.Router();
 
 /* router */
 module.exports = function(passport){  
-  /* GET login page. */
-  router.get('/', function(req, res) {
-    res.send('222222222');
-  });
-
-  /* Handle Login POST */
   router.post('/', passport.authenticate('local', {
-      successRedirect: '/login',
-      failureRedirect: '/login.html',
-      failureFlash: 'Invalid username or password.',
-      successFlash: 'Welcome!'})
+      successRedirect: '/login/success',
+      failureRedirect: '/login/failed'})
   );
 
-  router.get('/logout', function (req, res) {
+  router.get('/failed', function(req, res) {
+    res.status(401).json({status_code: 401, error: 'Login failed'});
+  });
+
+  router.get('/success', function(req, res) {
+    if(!req.session.views)  
+      req.session.views = 0;
+    
+    req.session.views++;
+    res.json({
+            username: req.user,
+            sessionUser: req.session.passport.user, 
+            sessionId: req.sessionID, 
+            sessionInfo: req.session, 
+            message: 'Login Successfully'});
+  }); 
+
+  router.post('/logout', function (req, res) {
+    req.session.destroy();    
     req.logout();
-    res.redirect('/login');
+    res.send('Log out');
   });
 
   return router;

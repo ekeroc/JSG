@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 var session = require('express-session');
+var logout = require('express-passport-logout');
 var flash = require('connect-flash');
 
 var login = require('./routes/api/login')(passport);
@@ -26,12 +27,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// passport
+// passport session
 app.use(session({ 
-  secret: 'your secret key',
+  secret: 'olhosvermelhoseasenhaclassica',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 3600000 //1 Hour
+  }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -79,23 +84,28 @@ passport.use('local', new localStrategy({
     user = Users[username];
 
     if (user ==  null) {
+      console.log('error');                
       return done(null, false, { message: 'Invalid user' });
     };
 
     if (user.password !== password){
+      console.log('error');          
       return done(null, false, { message: 'Invalid user' });
     }
-    
+
+    console.log(user['name'] + ' Login Successfully.');              
     return done(null, user);
   }
 ));
 
 passport.serializeUser(function(user, done){
-  return done(null, user.name);
+  console.log(user['name']);
+  return done(null,user['name']);
 });
 
 passport.deserializeUser(function(user, done){
-  return done(null, Users[user.name]);
+  console.log(user);
+  return done(null, user);
 });
 
 module.exports = app;
