@@ -9,16 +9,26 @@ module.exports = function(passport){
   );
 
   router.get('/failed', function(req, res) {
-    res.status(401).send({status_code: 401, error: 'Login failed'});
+    res.status(401).json({status_code: 401, error: 'Login failed'});
   });
 
   router.get('/success', function(req, res) {
-    res.send({username: req.user, message: 'Login Successfully'});
+    if(!req.session.views)  
+      req.session.views = 0;
+    
+    req.session.views++;
+    res.json({
+            username: req.user,
+            sessionUser: req.session.passport.user, 
+            sessionId: req.sessionID, 
+            sessionInfo: req.session, 
+            message: 'Login Successfully'});
   }); 
 
-  router.get('/logout', function (req, res) {
+  router.post('/logout', function (req, res) {
+    req.session.destroy();    
     req.logout();
-    res.redirect('/login');
+    res.send('Log out');
   });
 
   return router;
