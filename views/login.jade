@@ -1,0 +1,16 @@
+extends layout
+block content
+
+  head
+    title Welcome to log in page!
+    body
+        h1 Please sign in
+        form(action="/login", method='post')
+            p
+                label(for='username') Username &nbsp;
+                input(type='text', name='username' placeholder='username' required)
+            p
+                label(for='password') Password &nbsp;
+                input(type='password', name='password' placeholder='passowrd' required)
+            input(type='submit')
+            h4(style="color: red;") #{message}
